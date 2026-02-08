@@ -1,0 +1,11 @@
+[project]
+name = "telegram-bot-p37"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.18.3",
+    "make>=0.1.6.post2",
+    "psycopg2-binary>=2.9.11",
+    "sqlalchemy>=2.0.46",
+]
