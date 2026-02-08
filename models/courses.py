@@ -26,5 +26,5 @@ class Course(CreatedBase):
 #     course_id: Mapped[int] = mapped_column(ForeignKey('courses.id'))
 #
 #     __table_args__ = (
-#         UniqueConstraint("user_id", "course_id"),
+#         UniqueConstraint("user_id", "course_id")
 #     )
