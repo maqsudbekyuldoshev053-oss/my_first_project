@@ -83,8 +83,6 @@ from models.users import User
 #             break
 
 
-
-
 with Session(engine) as session:
     while True:
         print("""
@@ -142,60 +140,64 @@ with Session(engine) as session:
             session.execute(update(User).filter(User.id == _id).values({"first_name": new_name, "phone": new_phone}))
             session.commit()
 
+
         elif t == '8':
-            student_id = int(input("Student id: "))
-            course_id = int(input("Kurs id: "))
-            student = session.get(User, student_id)
-            course = session.get(Course, course_id)
-            if not student or not course:
-                print("Student yoki kurs topilmadi.")
-                continue
-            if course in student.courses:
-                print("Student allaqachon kursda bor.")
-                continue
-            student.courses.append(course)
-            session.commit()
+            student_id = int(input("Kursga qo'shmoqchi bulgan studentning id si: "))
+            course_id = int(input("Student qo'shmoqchi bulgan kurs id si: "))
+            student = session.scalar(select(User).filter(User.id == student_id))
+            if student is None:
+                print("Student topilmadi.")
+            else:
+                course = session.scalar(select(Course).filter(Course.id == course_id))
+                if course is None:
+                    print("Kurs topilmadi.")
+                elif course in student.courses:
+                    print("Student allaqachon ushbu coursega qo'shilgan.")
+                else:
+                    student.courses.append(course)
+                    session.commit()
 
         elif t == '9':
-            student_id = int(input("Student id: "))
-            course_id = int(input("Kurs id: "))
-            student = session.get(User, student_id)
-            course = session.get(Course, course_id)
-            if not student or not course:
-                print("Student yoki kurs topilmadi.")
-                continue
-            if course not in student.courses:
-                print("Student bu kursda yo'q.")
-                continue
-            student.courses.remove(course)
-            session.commit()
+            student_id = int(input("Kursdan o'chiriladigan studentning id si: "))
+            course_id = int(input("Student o'chiriladigan course id si: "))
+            student = session.scalar(select(User).filter(User.id == student_id))
+            if student is None:
+                print("Student topilmadi.")
+            else:
+                course = session.scalar(select(Course).filter(Course.id == course_id))
+                if course is None:
+                    print("Kurs topilmadi.")
+                elif course not in student.courses:
+                    print("Student bu coursega biriktirilmagan.")
+                else:
+                    student.courses.remove(course)
+                    session.commit()
 
         elif t == '10':
-            student_id = int(input("Student id: "))
-            from_course_id = int(input("Qaysi kursdan: "))
-            to_course_id = int(input("Qaysi kursga: "))
-            student = session.get(User, student_id)
-            from_course = session.get(Course, from_course_id)
-            to_course = session.get(Course, to_course_id)
-            if not student or not from_course or not to_course:
-                print("Student yoki kurs topilmadi.")
-                continue
-            if from_course == to_course:
-                print("Kurslar bir xil.")
-                continue
-            if from_course not in student.courses:
-                print("Student bu kursda yo'q.")
-                continue
-            if to_course in student.courses:
-                print("Student allaqachon kursda bor.")
-                continue
-            student.courses.remove(from_course)
-            student.courses.append(to_course)
-            session.commit()
-
+            student_id = int(input("Ko'chiriladigan studentning id si: "))
+            from_course_id = int(input("Qaysi coursedan: "))
+            to_course_id = int(input("Qaysi coursega: "))
+            student = session.scalar(select(User).filter(User.id == student_id))
+            if student is None:
+                print("Student topilmadi.")
+            else:
+                from_course = session.scalar(select(Course).filter(Course.id == from_course_id))
+                to_course = session.scalar(select(Course).filter(Course.id == to_course_id))
+                if from_course is None:
+                    print("Eski course topilmadi.")
+                elif to_course is None:
+                    print("Yangi course topilmadi.")
+                elif from_course not in student.courses:
+                    print("Student eski coursega biriktirilmagan.")
+                elif to_course in student.courses:
+                    print("Student allaqachon yangi coursega biriktirilgan.")
+                else:
+                    student.courses.remove(from_course)
+                    student.courses.append(to_course)
+                    session.commit()
 
         elif t == '0':
             break
 
-
-
+# from_course = session.get(Course, from_course_id)
+# to_course = session.get(Course, to_course_id)

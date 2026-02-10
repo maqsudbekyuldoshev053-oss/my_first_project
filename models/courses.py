@@ -21,10 +21,11 @@ class Course(CreatedBase):
     def __repr__(self):
         return f"{self.name}"
 
+
 # class UserCourse(CreatedBase):
 #     student_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
 #     course_id: Mapped[int] = mapped_column(ForeignKey('courses.id'))
 #
 #     __table_args__ = (
-#         UniqueConstraint("user_id", "course_id")
+#         UniqueConstraint("user_id", "course_id"),
 #     )
