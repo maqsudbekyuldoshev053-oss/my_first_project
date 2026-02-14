@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 # from models.courses import Course
 # from models.users import User
-from models.films import Film, Category
+from models.films import Film
 
 # Base.metadata.create_all(engine)
 
@@ -345,8 +345,43 @@ from models.films import Film, Category
 #             break
 
 
-
-
+if __name__ == '__main__':
+    while True:
+        print("""
+        1. film read
+        2. film update
+        3. film delete
+        4. film create
+       """)
+        choose = input("Enter your choice: ")
+        if choose == '1':
+            for i in Film.get_all():
+                print(i)
+        elif choose == '2':
+            film_id = input("Enter your film id title which you want to update: ")
+            title = input("Changing Film Title: ")
+            description = input("Changing Film Description: ")
+            release_year = input("Changing Film Release Year: ")
+            data = {
+                "title": title,
+                "description": description,
+                "release_year": release_year
+            }
+            Film.update(film_id, **data)
+        elif choose == '3':
+            film_id = input("Enter your film id title which you want to delete: ")
+            Film.delete(film_id)
+        elif choose == '4':
+            title = input("Film Title: ")
+            description = input("Film Description: ")
+            release_year = input("Film Release Year: ")
+            data = {
+                "title": title,
+                "description": description,
+                "release_year": release_year
+            }
+            Film.create(**data)
+            print('Qoshildi')
 
 
 

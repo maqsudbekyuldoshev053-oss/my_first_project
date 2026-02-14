@@ -18,7 +18,7 @@ class Film(Model):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text, nullable=True)
     release_year: Mapped[int] = mapped_column(Integer, nullable=True)
-    categories: Mapped[list['Category']] = relationship('Category', secondary='film_category', back_populates='films')
+    categories: Mapped[list['Category']] = relationship('Category', secondary='film_categories', back_populates='films')
 
 
     def __str__(self):
@@ -27,7 +27,7 @@ class Film(Model):
 
 class Category(Model):
     name: Mapped[str] = mapped_column(String(25))
-    films: Mapped[list['Film']] = relationship('Film', secondary='film_category', back_populates='categories')
+    films: Mapped[list['Film']] = relationship('Film', secondary='film_categories', back_populates='categories')
 
 
     def __str__(self):

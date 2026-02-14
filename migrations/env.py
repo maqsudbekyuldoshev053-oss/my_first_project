@@ -1,11 +1,14 @@
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+import sys
+from pathlib import Path
 
 from alembic import context
+from sqlalchemy import pool, create_engine
 
-import models
+# Add project root to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from config import settings
+from models.base import Model
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -13,14 +16,17 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+# if config.config_file_name is not None:
+#     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = models.Base.metadata
+
+# o'zgarish bo'lgan joyi
+target_metadata = Model.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -40,7 +46,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # o'zgarish bo'lgan joyi
+    url = settings.postgresql_url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -59,9 +66,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+    # o'zgarish bo'lgan joyi
+    connectable = create_engine(
+        settings.postgresql_url,
         poolclass=pool.NullPool,
     )
 
