@@ -55,7 +55,7 @@ class AbstractClass:
     def commit(cls):
         try:
             db.commit()
-        except Exception as e:
+        except Exception:
             db.rollback()
 
     @classmethod
