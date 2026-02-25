@@ -1,10 +1,10 @@
 from sqlalchemy import String, ForeignKey, Integer, UniqueConstraint, Text
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from models.base import Model
+from models.base import Model, CreatedBaseModel
 
 
-class Film(Model):
+class Film(CreatedBaseModel):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text, nullable=True)
     release_year: Mapped[int] = mapped_column(Integer, nullable=True)

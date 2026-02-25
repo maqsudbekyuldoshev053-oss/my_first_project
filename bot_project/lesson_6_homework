@@ -99,22 +99,6 @@ async def handler_image(message: Message, bot: Bot, state: FSMContext) -> None:
     await message.answer_photo(data['photo'], caption=text,  reply_markup=ikm.as_markup())
 
 
-@dp.callback_query()
-async def callback_query_handler(callback: CallbackQuery,  bot: Bot, state: FSMContext) -> None:
-    if callback.data == "ism":
-        await state.set_state(Form.first_name)
-        await callback.message.answer("Yangi ism kiriting")
-
-    elif callback.data == "birth":
-        await state.set_state(Form.birth_date)
-        await callback.message.answer("Yangi tugilgan kun kiriting")
-
-    elif callback.data == "image":
-        await state.set_state(Form.image)
-        await callback.message.answer("Yangi rasm kiriting")
-
-    await callback.message.delete()
-    await callback.answer()
 
 async def main() -> None:
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
