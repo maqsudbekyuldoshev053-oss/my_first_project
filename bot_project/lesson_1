@@ -12,7 +12,7 @@ from aiogram.types import Message, FSInputFile
 
 2-botfather dan olingan bot tokeni
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+TOKEN = "Token"
 ------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------

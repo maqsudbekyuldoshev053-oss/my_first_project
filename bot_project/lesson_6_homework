@@ -18,12 +18,12 @@ from aiogram.types import ReplyKeyboardRemove, Message, InlineKeyboardMarkup, In
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder, KeyboardButton
 from sqlalchemy.util import await_only
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+TOKEN = "Token"
 
 redis_url = 'redis://localhost:6379/0'
 dp = Dispatcher(storage=RedisStorage.from_url(redis_url))
 
-ADMIN_ID = 7742819222
+ADMIN_ID = ID
 
 
 class Form(StatesGroup):

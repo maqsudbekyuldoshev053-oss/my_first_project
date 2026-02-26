@@ -21,7 +21,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 ----------------------------------------------------------------------------
 2-botning Tokeni
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+TOKEN = Token
 
 ----------------------------------------------------------------------------
 

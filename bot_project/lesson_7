@@ -15,12 +15,12 @@ from aiogram.types import Message, ReplyKeyboardRemove
 
 
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+TOKEN = "Token"
 
 redis_url = 'redis://localhost:6379/0'
 dp = Dispatcher(storage=RedisStorage.from_url(redis_url))
 
-ADMIN_ID = 514411336
+ADMIN_ID = ID
 
 
 class Form(StatesGroup):

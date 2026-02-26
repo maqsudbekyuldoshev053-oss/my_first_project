@@ -16,11 +16,11 @@ from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import ReplyKeyboardRemove, Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+TOKEN = "Token"
 
 dp = Dispatcher(storage=MemoryStorage())
 
-ADMIN_ID = 7742819222
+ADMIN_ID = ID
 
 
 class Form(StatesGroup):

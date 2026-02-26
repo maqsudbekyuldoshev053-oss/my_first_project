@@ -16,8 +16,8 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from sqlalchemy.orm import scoped_session
 
 # Bot token can be obtained via https://t.me/BotFather
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
-ADMIN_ID = 7742819222
+TOKEN = "Token"
+ADMIN_ID = ID
 
 # All handlers should be attached to the Router (or Dispatcher)
 dp = Dispatcher()
