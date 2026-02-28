@@ -15,11 +15,11 @@ from aiogram.filters import CommandStart
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, FSInputFile
 import tempfile, os, aiohttp
 
-TOKEN = "8620704086:AAFNf49cHZ1wjs2L7tQKj5sRb1cn09atd_Q"
+TOKEN = "Token
 redis_url = 'redis://localhost:6379/0'
 
 dp = Dispatcher(storage=RedisStorage.from_url(redis_url))
-ADMIN_ID = 7742819222
+ADMIN_ID = Id
 
 MODULES = {
     "1-module": {
