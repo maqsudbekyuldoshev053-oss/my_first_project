@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from sqlalchemy import Integer, create_engine, select as sqlalchemy_select, \
-    update as sqlalchemy_update, delete as sqlalchemy_delete, DateTime
+    update as sqlalchemy_update, delete as sqlalchemy_delete, DateTime, engine
+from sqlalchemy.future import engine
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, sessionmaker, declared_attr
 from sqlalchemy.sql.functions import now
 
@@ -158,3 +159,5 @@ class CreatedBaseModel(Model):
     __abstract__ = True
     updated_at: Mapped[datetime] = mapped_column(DateTime, insert_default=now(), server_onupdate=now(), sort_order=99)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=now(), sort_order=100)
+
+

@@ -1,5 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 class Settings(BaseSettings):
@@ -20,7 +22,13 @@ class Settings(BaseSettings):
                 f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DATABASE}")
 
     class Config:
-        env_file = '.env'
+        env_file = ".env"
 
 
+# Settings instance
 settings = Settings()
+
+engine = create_engine(settings.postgresql_url, echo=True)
+
+# Session factory
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)

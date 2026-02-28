@@ -1,24 +1,24 @@
-# from datetime import datetime
-#
-# from sqlalchemy import String, DateTime, Integer, UniqueConstraint, CheckConstraint, ForeignKey
-# from sqlalchemy.orm import mapped_column, Mapped, relationship
-#
-# from models.base import CreatedBaseModel, Model
+from datetime import datetime
+
+from sqlalchemy import String, DateTime, Integer, UniqueConstraint, CheckConstraint, ForeignKey
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+
+from models.base import CreatedBaseModel, Model
 # from models.courses import Course
-#
-#
-# class User(CreatedBaseModel):
-#     first_name: Mapped[str] = mapped_column(String(255))
-#     last_name: Mapped[str] = mapped_column(String(255), nullable=True)
-#     phone: Mapped[str] = mapped_column(String(12), unique=True)
-#     last_login: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-#     adverts: Mapped[list['Advert']] = relationship('Advert', back_populates='owner')
-#     passport: Mapped['Passport'] = relationship('Passport', back_populates='user')
-#     courses: Mapped[list['Course']] = relationship('Course', secondary='user_courses', back_populates='students')
-#
-#     def __str__(self):
-#         return f"{self.id} - {self.first_name}"
-#
+
+
+class User(CreatedBaseModel):
+    first_name: Mapped[str] = mapped_column(String(255))
+    last_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    phone: Mapped[str] = mapped_column(String(12), unique=True)
+    last_login: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    adverts: Mapped[list['Advert']] = relationship('Advert', back_populates='owner')
+    # passport: Mapped['Passport'] = relationship('Passport', back_populates='user')
+    # courses: Mapped[list['Course']] = relationship('Course', secondary='user_courses', back_populates='students')
+
+    def __str__(self):
+        return f"{self.id} - {self.first_name}"
+
 #
 # class Passport(Model):
 #     series: Mapped[str] = mapped_column(String(2))

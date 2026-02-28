@@ -1,129 +1,120 @@
 import asyncio
 import logging
 import sys
-
 from datetime import datetime
+
+import csv
+import json
+from gc import callbacks
 from pyexpat.errors import messages
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart, Command, state, callback_data
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
-from aiogram.types import ReplyKeyboardRemove, Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, \
-    BotCommand, BotCommandScopeAllPrivateChats, KeyboardButton, BufferedInputFile, InputProfilePhotoStatic
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder, KeyboardButton
-from sqlalchemy.util import await_only
+from aiogram.types import Message, InlineKeyboardButton, BotCommand, BotCommandScopeAllPrivateChats, CallbackQuery, \
+    InputMediaPhoto, InputMediaVideo, FSInputFile
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = '7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs'
+from config import engine
+from models import District, Region
+from sqlalchemy import text
 
+TOKEN = "7874681745:AAFb_km4wx4lHNfD-MAYK9OmabOhLdB0ORs"
 redis_url = 'redis://localhost:6379/0'
-dp = Dispatcher(storage=RedisStorage.from_url(redis_url))
 
+dp = Dispatcher(storage=RedisStorage.from_url(redis_url))
 ADMIN_ID = 7742819222
 
 
-class Form(StatesGroup):
-    first_name = State()
-    birth_date = State()
-    image = State()
-
-
-async def startup(bot: Bot) -> None:
-    await bot.set_my_commands([
-        BotCommand(command='start', description="Bot started"),
-    ], scope=BotCommandScopeAllPrivateChats())
-
 
 @dp.message(CommandStart())
-async def start_handler(message: Message, bot: Bot, state: FSMContext) -> None:
-    await state.set_state(Form.first_name)
-    await message.answer("Bot ga xush kelibsiz!")
-    await message.answer('Ism kiriting')
+async def start_handler(message: Message):
+    await message.reply("Xush kelibsiz")
 
 
-@dp.message(Form.first_name)
-async def handle_first_name(message: Message, bot: Bot, state: FSMContext) -> None:
-    first_name = message.text
-    if first_name.replace("'", '').isalpha():
-        await state.update_data(first_name=first_name.title())
-        await state.set_state(Form.birth_date)
-        await message.answer("Tug'ilgan kun kiriting")
-    else:
-        await message.answer("Ism to'g'ri kiriting")
-
-
-@dp.message(Form.birth_date)
-async def handle_first_receive(message: Message, state: FSMContext):
-    birth_date = message.text
-    try:
-        birth_date = datetime.strptime(birth_date, '%Y.%m.%d')
-    except Exception as e:
-        await message.answer('tugilgan sanani togri kiriting')
-        return
-
-    age = datetime.now().year - birth_date.year
-    if age <= 18:
-        await message.answer('yoshingiz kichkina!')
-        return
-
-    await state.update_data(birth_date=message.text, age=age)
-    await state.set_state(Form.image)
-    await message.answer("Rasm kiriting")
-
-@dp.message(Form.image)
-async def handler_image(message: Message, bot: Bot, state: FSMContext) -> None:
-    photo = message.photo
-    if photo is None:
-        await message.answer("Rasm xato ❌(Rasm formatda kiriting)")
-        return
-
-    await state.update_data(photo=photo[-1].file_id)
-    data = await state.get_data()
-    text = (
-        f"<b>Ism</b>: {data['first_name']}\n"
-        f"<b>Tugilgan kun</b>: {data['birth_date']}\n"
-        f"<b>Yoshi</b>: {data['age']}\n"
-        f"<b>Telegram ID</b>: {message.from_user.id}"
-    )
+    regions = Region.get_all()
     ikm = InlineKeyboardBuilder()
-    ikm.add(
-        InlineKeyboardButton(text='Ism ✏️', callback_data='ism'),
-        InlineKeyboardButton(text="Tug'ilgan kun ✏️", callback_data='birth'),
-        InlineKeyboardButton(text='Rasm ✏️', callback_data='image')
-    )
+    for region in regions:
+        ikm.add(
+            InlineKeyboardButton(text=region.name,
+            callback_data=f"region:{region.id}")
+            )
     ikm.adjust(1)
-    await message.answer_photo(data['photo'], caption=text,  reply_markup=ikm.as_markup())
+    await message.reply("Viloyatni tanlang:", reply_markup=ikm.as_markup())
 
 
-@dp.callback_query()
-async def callback_query_handler(callback: CallbackQuery,  bot: Bot, state: FSMContext) -> None:
-    if callback.data == "ism":
-        await state.set_state(Form.first_name)
-        await callback.message.answer("Yangi ism kiriting")
+@dp.callback_query(F.data.startswith("region:"))
+async def region_handler(callback: CallbackQuery) -> None:
+    region_id = callback.data.removeprefix("region:")
 
-    elif callback.data == "birth":
-        await state.set_state(Form.birth_date)
-        await callback.message.answer("Yangi tugilgan kun kiriting")
+    districts = District.get_all()
+    ikm = InlineKeyboardBuilder()
 
-    elif callback.data == "image":
-        await state.set_state(Form.image)
-        await callback.message.answer("Yangi rasm kiriting")
+    for district in districts:
+        ikm.button(
+            text=district.name, callback_data=f"district:{district.id}"
+        )
+    ikm.adjust(1)
+    await callback.message.edit_reply_markup(callback.inline_message_id, reply_markup=ikm.as_markup())
 
-    await callback.message.delete()
+    ikm.button(text="🔙 Back", callback_data='back')
+    ikm.adjust(1)
+    await callback.message.edit_text("Tumanni tanlang:",reply_markup=ikm.as_markup())
+
+
+@dp.callback_query(F.data == "back")
+async def back_handler(callback: CallbackQuery) -> None:
+
+    regions = Region.get_all()
+    ikm = InlineKeyboardBuilder()
+    for region in regions:
+        ikm.add(
+            InlineKeyboardButton(text=region.name,
+                                 callback_data=f"region:{region.id}")
+        )
+    ikm.adjust(1)
+    await callback.message.edit_text("Viloyatni tanlang:", reply_markup=ikm.as_markup())
+
     await callback.answer()
 
-async def main() -> None:
+
+@dp.callback_query(F.data.startswith("district:"))
+async def district_handler(callback: CallbackQuery) -> None:
+    msg = callback.data.removeprefix("district:")
+    await callback.answer(msg + " Tanlandi", show_alert=True)
+
+
+
+@dp.message(Command("migrate"))
+async def migrate(message: Message):
+
+    with open("regions.csv", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            Region.create(name=row["name"])
+
+    with open("districts.csv", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            District.create(
+                id=int(row["id"]),name=row["name"], region_id=int(row["region_id"]))
+
+
+    await message.answer("Region va District ma’lumotlari databasega yozildi!✅")
+
+
+
+async def main():
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-
-    dp.startup.register(startup)
-
+    # dp.startup.register(startup)
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
+
